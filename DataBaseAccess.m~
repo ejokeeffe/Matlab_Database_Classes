@@ -1,0 +1,83 @@
+%> @file DataBaseAccess.m
+%> @brief Abstract class for inheritance for DataBase subclasses (eg for
+%xls, access, mysql etc)
+
+%> @mainpage Overview
+
+%> @section intro Introduction
+
+%> Authors: Eoin O'Keeffe,
+
+%> Date initiated: 13/8/10
+
+%> Version: 1.0
+
+%> This class provides access to database files of type xls/xlsx
+classdef DataBaseAccess < DataBase
+    %DATABASEACCESS Summary of this class goes here
+    %   Detailed explanation goes here
+    
+    properties
+        db = 'inputs\trade\Routes.xls';
+        root = '\\VBOXSVR\Dropbox\WP1 working folder\master model\data\';
+    end %properties
+    
+    methods 
+        function open()
+            
+        end
+        function close()
+            
+        end
+        function [num,txt] = rows(table)
+            
+        end
+        function [num,txt] = columns()
+        end
+        
+        function [cell_data] = getAll(obj,table) 
+            con = database('obj.db', '', '');
+            sql_str = exec(connA, strcat('select * from ',table));
+            %this should return as cell array, if not then change in 
+            %setdbprefs to DataReturnFOrmat : 'cellarray'
+            cell_data = fetch(con,sql_str); 
+            close(con);
+        end %function getAll
+        
+        function getCol(table,x)
+            
+        end %
+        function getRow(table,y) 
+            
+        end %function GetRow
+        function [val] = getOne(obj,table,id,col_index)
+            
+            
+        end %function 
+        function setAll(array)
+            
+        end %function setAll
+        function setCol(x,array)
+            
+        end %function setCol
+        function setRow(y,array,table)
+            con = database('obj.db', '', '');
+            %This should be improved but get the max ID and then increment
+            %by 1 to insert
+            id = exec(con,strcat('SELECT MAX(ID) FROM ',table));
+            tmp = 
+            for i = 1 to size(array,2)
+                
+            end %for
+            sql_str = strcat('insert into ',table, ' VALUES (',id(1,1),'))
+            sql_str = exec(connA, );
+            fastinsert(con,table,colnames,array) 
+            close(con);
+        end %setROw
+        function setOne(x,y, value)
+            
+        end %setOne
+    end %methods
+    
+end %class DataClass
+
