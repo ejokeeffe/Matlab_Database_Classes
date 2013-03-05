@@ -10,6 +10,8 @@
 %> <br /> <i>Version 1.5</i>: 23/04/2012
 %> <br /> <i>Version 1.6</i>: 6/11/2012
 %> <br /> <i>Version 1.7</i>: 08/01/2012
+%> <br /> <i>Version 1.8</i>: 05/03/2013
+%>
 %> @version 
 %> 1.1 New class created as matlab doesn't connect with Access in the
 %> 64-bit version. Handy that isn't it.
@@ -31,6 +33,9 @@
 %> ago
 %> <br /><i>Version 1.7</i>: added function to escape a string value for
 %> insert into the database
+%> <br /><i>Version 1.8</i>: Add getting useranme and password from config
+%> file
+
 %> private
 %> @section intro Method
 %> Usual database methods
@@ -45,6 +50,7 @@ classdef DataBasePG < DataBaseAbs
     properties
         con
         pass
+        user
     end %properties
     
     methods 
@@ -63,8 +69,14 @@ classdef DataBasePG < DataBaseAbs
             % Create the connection URL.
             conurl = ['jdbc:postgresql://localhost:5432/' obj.db];
 
+            % before connecting to database, make sure we have a password
+            % and username
+            %retrieve from config file
+            obj.user = Useful.getConfigProperty('dbuser');
+            obj.pass = Useful.getConfigProperty('dbpassword');
+            
             % Connect to the database.
-            obj.con = database(obj.db,'postgres',obj.pass,'org.postgresql.Driver', conurl);
+            obj.con = database(obj.db,obj.user,obj.pass,'org.postgresql.Driver', conurl);
     
         end
         function close()
