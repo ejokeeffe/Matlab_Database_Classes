@@ -71,7 +71,7 @@ classdef DataBasePG < DataBaseAbs
 
             % before connecting to database, make sure we have a password
             % and username
-            if ~isempty(obj.user)
+            if isempty(obj.user)
                 %retrieve from config file
                 obj.user = Useful.getConfigProperty('dbuser');
                 obj.pass = Useful.getConfigProperty('dbpassword');

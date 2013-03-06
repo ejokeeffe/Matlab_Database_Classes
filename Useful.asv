@@ -142,82 +142,76 @@ classdef Useful
      function [dist_km] = GreatCircleDistance(sourceLon, sourceLat, ...
              destLon, destLat,direction)
         
-            dlon = degtorad((destLon-sourceLon));
-         lat1 = degtorad(sourceLat);
-        
-        lat2 = degtorad(destLat);
-        cos_delta = repmat(sin(lat1),length(destLat),1).*sin(lat2)+...
-        repmat(cos(lat1),length(destLat),1).*cos(lat2).*cos(dlon);
-        dist_km = rad2deg(real(acos(cos_delta)))*30*1.852;
-         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-         %% Old code
          
-%          if nargin == 4
-%              direction = [];
-%          end %if
-%          %disp(size(phi_f));
-%          %disp(['x:' num2str(phi_s) ' ' num2str(lambda_s) ' y:' num2str(phi_f) ' ' num2str(lambda_f)]);
-%          %dist_km= zeros(size(destLon,1),1);
-%          %for i=1:size(destLon,1)
-% %         cos_delta = sin(phi_s*pi/180)*sin(phi_f(i)*pi/180)+...
-% %             cos(phi_s*pi/180)*cos(phi_f(i)*pi/180)*cos((lambda_s-lambda_f(i))*pi/180);
-% %         delta_rads = acos(cos_delta);
-% %changed by eok to formula on movable-type.co.uk/scripts/latlong.html
-%        % r=6371; %kms
-% %             dlat = degtorad((destLat(i)-sourceLat));
-% %             dlon = degtorad((destLon(i)-sourceLon));
-%             dlat = degtorad((destLat-sourceLat));
-%             dlon = degtorad((destLon-sourceLon));
-%           %  if ~(dlon==0 && dlat==0)
-%             lat1 = degtorad(sourceLat);
-%             %lat2 = degtorad(destLat(i));
-%             lat2 = degtorad(destLat);
-% try
-% %             a = sin(dlat/2)^2 + sin(dlon/2)^2*cos(lat1)*cos(lat2);
-% %             c = 2*atan2(sqrt(a),sqrt(1-a));
-%             cos_delta = repmat(sin(lat1),length(destLat),1).*sin(lat2)+...
-%             repmat(cos(lat1),length(destLat),1).*cos(lat2).*cos(dlon);
-%         dist = rad2deg(real(acos(cos_delta)))*30*1.852;
-% %             if isempty(direction)
-% %                 dist=r*c;
-% %             elseif direction == 'E'
-% %                 %check if we're going in the wrong direction
-% %                 if sourceLon>destLon
-% %                     dist=r*(2*pi-c);
-% %                 else
-% %                     dist=r*c;
-% %                 end %if
-% %             elseif direction == 'S'
-% %                 %check if we're going in the wrong direction
-% %                 if sourceLat<destLat
-% %                     dist=r*(2*pi-c);
-% %                 else
-% %                     dist=r*c;
-% %                 end %if
-% %             elseif direction =='W'
-% %                 if sourceLon>destLon
-% %                     dist=r*(2*pi-c);
-% %                 else
-% %                     dist=r*c;
-% %                 end %if
-% %              elseif direction =='N'
-% %                 if sourceLat<destLat
-% %                     dist=r*(2*pi-c);
-% %                 else
-% %                     dist=r*c;
-% %                 end %if   
-% %             end
-% %             else
-% %                 dist=0;
-% %             end
-%                 
-%             
-%             %dist_km(i) = dist_km*.539957;
-%             %dist_km(i) = dist;
-%          dist_km=dist;
-%         %disp(['Returning: ' num2str(dist_nm)]);
-%          %end 
-%          %disp(sprintf('about to exit and inputs are %d and %d. Result is %f',numel(sourceLon),numel(destLon),dist_km(1)));
+         
+         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+         %% Old c
+         if nargin == 4
+             direction = [];
+         end %if
+         %disp(size(phi_f));
+         %disp(['x:' num2str(phi_s) ' ' num2str(lambda_s) ' y:' num2str(phi_f) ' ' num2str(lambda_f)]);
+         %dist_km= zeros(size(destLon,1),1);
+         %for i=1:size(destLon,1)
+%         cos_delta = sin(phi_s*pi/180)*sin(phi_f(i)*pi/180)+...
+%             cos(phi_s*pi/180)*cos(phi_f(i)*pi/180)*cos((lambda_s-lambda_f(i))*pi/180);
+%         delta_rads = acos(cos_delta);
+%changed by eok to formula on movable-type.co.uk/scripts/latlong.html
+       % r=6371; %kms
+%             dlat = degtorad((destLat(i)-sourceLat));
+%             dlon = degtorad((destLon(i)-sourceLon));
+            dlat = degtorad((destLat-sourceLat));
+            dlon = degtorad((destLon-sourceLon));
+          %  if ~(dlon==0 && dlat==0)
+            lat1 = degtorad(sourceLat);
+            %lat2 = degtorad(destLat(i));
+            lat2 = degtorad(destLat);
+try
+%             a = sin(dlat/2)^2 + sin(dlon/2)^2*cos(lat1)*cos(lat2);
+%             c = 2*atan2(sqrt(a),sqrt(1-a));
+            cos_delta = repmat(sin(lat1),length(destLat),1).*sin(lat2)+...
+            repmat(cos(lat1),length(destLat),1).*cos(lat2).*cos(dlon);
+        dist = rad2deg(real(acos(cos_delta)))*30*1.852;
+%             if isempty(direction)
+%                 dist=r*c;
+%             elseif direction == 'E'
+%                 %check if we're going in the wrong direction
+%                 if sourceLon>destLon
+%                     dist=r*(2*pi-c);
+%                 else
+%                     dist=r*c;
+%                 end %if
+%             elseif direction == 'S'
+%                 %check if we're going in the wrong direction
+%                 if sourceLat<destLat
+%                     dist=r*(2*pi-c);
+%                 else
+%                     dist=r*c;
+%                 end %if
+%             elseif direction =='W'
+%                 if sourceLon>destLon
+%                     dist=r*(2*pi-c);
+%                 else
+%                     dist=r*c;
+%                 end %if
+%              elseif direction =='N'
+%                 if sourceLat<destLat
+%                     dist=r*(2*pi-c);
+%                 else
+%                     dist=r*c;
+%                 end %if   
+%             end
+%             else
+%                 dist=0;
+%             end
+                
+            
+            %dist_km(i) = dist_km*.539957;
+            %dist_km(i) = dist;
+         dist_km=dist;
+        %disp(['Returning: ' num2str(dist_nm)]);
+         %end 
+         %disp(sprintf('about to exit and inputs are %d and %d. Result is %f',numel(sourceLon),numel(destLon),dist_km(1)));
      end%GreatCircleDistance
      
      
