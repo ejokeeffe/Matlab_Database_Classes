@@ -131,8 +131,7 @@ classdef Useful
              end %for
      end %FindCellInCellSimple
      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-     %> @brief This not use this function anymore - use the inbuilt
-     %> distance function in matlab
+     %> @brief Haversine formula
      %> @param sourceLon
      %> @param sourceLat
      %> @param destLon
@@ -141,16 +140,25 @@ classdef Useful
      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      function [dist_km] = GreatCircleDistance(sourceLon, sourceLat, ...
              destLon, destLat,direction)
-        
+            dlat = degtorad((destLat-sourceLat));
             dlon = degtorad((destLon-sourceLon));
-         lat1 = degtorad(sourceLat);
-        
-        lat2 = degtorad(destLat);
-        cos_delta = repmat(sin(lat1),length(destLat),1).*sin(lat2)+...
-        repmat(cos(lat1),length(destLat),1).*cos(lat2).*cos(dlon);
-        dist_km = rad2deg(real(acos(cos_delta)))*30*1.852;
+            lat1 = degtorad(sourceLat);
+
+            lat2 = degtorad(destLat);
+          a = sin(dlat/2).^2 + cos(lat1).*cos(lat2).*sin(dlon/2).^2;
+          c = 2*atan2(real(a).^0.5,real((1-real(a)).^0.5));
+          r = 6371;
+          dist_km=r*c;
          %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
          %% Old code
+%            dlon = degtorad((destLon-sourceLon));
+%          lat1 = degtorad(sourceLat);
+%         
+%         lat2 = degtorad(destLat);
+%         cos_delta = repmat(sin(lat1),length(destLat),1).*sin(lat2)+...
+%         repmat(cos(lat1),length(destLat),1).*cos(lat2).*cos(dlon);
+%         dist_km = rad2deg(real(acos(cos_delta)))*30*1.852;
+        
          
 %          if nargin == 4
 %              direction = [];

@@ -133,7 +133,7 @@ classdef DataBasePG < DataBaseAbs
     %> works properly
     %> @retval cell_Data 
     % ======================================================================
-        function [cell_data] = executeQuery(obj,sqlstr,countQuery,orderByField)
+        function [cell_data,e] = executeQuery(obj,sqlstr,countQuery,orderByField)
             
             if nargin==2
                 %Just a normal fetch
@@ -381,6 +381,7 @@ classdef DataBasePG < DataBaseAbs
             %and run insert
             insertStatement ='';
             for i=1:size(vals,1)
+                disp(sprintf('building insert statement for %d of %d',i,size(vals,1)));
                 %build the values string
                 sqlValues = '';
                 for j=1:size(vals,2)
@@ -398,7 +399,10 @@ classdef DataBasePG < DataBaseAbs
                 %do we run it now or what?
                 if (rem(i,insertCount)==0 || i==size(vals,1))
                     %run the statement
-                    obj.executeQuery(insertStatement);
+                    [~,res] = obj.executeQuery(insertStatement);
+                    if ~isempty(res.Message)
+                        error(res.Message);
+                    end %if
                     insertStatement='';
                 end %if
             end %for i
