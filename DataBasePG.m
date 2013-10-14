@@ -381,7 +381,7 @@ classdef DataBasePG < DataBaseAbs
             %and run insert
             insertStatement ='';
             for i=1:size(vals,1)
-                disp(sprintf('building insert statement for %d of %d',i,size(vals,1)));
+                %disp(sprintf('building insert statement for %d of %d',i,size(vals,1)));
                 %build the values string
                 sqlValues = '';
                 for j=1:size(vals,2)
