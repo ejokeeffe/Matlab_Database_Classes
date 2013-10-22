@@ -41,7 +41,51 @@ classdef Useful
     properties
     end
     
-    methods
+    methods (Static = true, Access = private)
+        %------------------------------------------------------
+            %> @brief   function pointq_setup(hh)
+        %> Sets up a points queue.  Everytime a user clicks in the axes (given by hh)
+        %> the point is added to the UserData variable associated with the axes.
+        %> the UserData variable is n*2, where n is the number of points in the queue.
+        %> It was used in the
+    %> Adaptive Modelling of Complex data course provided by Yee Whye Teh
+    %> and is available from his UCL course pages.
+    function pointq_setup(hh)
+
+
+        set(hh,'userdata',zeros(0,2));
+        set(hh,'buttondownfcn',@add2q);
+        set(hh,'interruptible','off');
+        set(hh,'busyaction','queue');
+
+        function add2q(hh,event)
+
+            buttontype = get(get(hh,'parent'),'selectiontype');
+            switch lower(buttontype)
+            case 'alt'
+              qq = get(hh,'userdata');
+              qq(end+1,:) = [NaN NaN];
+              set(hh,'userdata',qq);
+            otherwise
+              pointerline = get(hh,'currentpoint');
+              pointerlocation = pointerline(1,1:2);
+              qq = get(hh,'userdata');
+              qq(end+1,:) = pointerlocation;
+              set(hh,'userdata',qq);
+            end 
+        end 
+    end%point1_setup
+
+    %> @brief  % get points from point queue, and empty it.
+    %> It was used in the
+    %> Adaptive Modelling of Complex data course provided by Yee Whye Teh
+    %> and is available from his UCL course pages.
+    function qq = pointq_get(hh)
+       
+
+        qq = get(hh,'userdata');
+        set(hh,'userdata',zeros(0,2));
+    end %pointq_get
     end
     methods (Static = true) % Define static method 
      function [x] = Val2Str(val)
@@ -61,75 +105,75 @@ classdef Useful
      function [x] = Cell2Str(cell)
          x = mat2str(cell2mat(cell));
      end %function Cell2Str
-     function [x] = FindCellInCell(searchCell,elementCell,indexes,fullmatch)
-         %The order of indexes should be the same order as searchCell, but
-         %its cell values should correspond to the cell in elementCell
-         if nargin >= 3
-            %the indexes have been passed, these should be in a cell array
-            %but they may not all be values
-            tmp_elementcell = 0;
-            tmp_searchcell = 0;
-            for i=1:size(indexes,2)
-                if ~strcmp(Useful.Val2Str(indexes(1,i)),'[]') &...
-                        ~strcmp(Useful.Val2Str(indexes(1,i)),'-1')
-                    %add index to tmp_cell
-                    tmp_elementcell = [tmp_elementcell str2double(cell2mat(indexes(1,i)))];
-                    tmp_searchcell = [tmp_searchcell i];
-                end %if
-            end %for
-            %now strip off the unwanted indexes in element cell
-            elementCell = elementCell(1,tmp_elementcell(1,2:end));
-            searchCell = searchCell(:,tmp_searchcell(1,2:end));
-         end %if
-         fuzzymatch = 0;
-         if nargin == 4
-             if fullmatch > 0 
-                 fuzzymatch = 1;
-             end %if
-         end %if
-         %Now lets make sure we're comparing cell array of the same cell
-         %classes - ie strings
-         searchCell = cellfun(@Useful.Val2Str,searchCell,'Un',0);
-         elementCell = cellfun(@Useful.Val2Str,elementCell,'Un',0);
-         x = -1;
-         if fuzzymatch ==0
-             for i=1:size(searchCell,1)
-                 if isequal(searchCell(i,:),elementCell)
-                    x = i; 
-                    break;
-                 end
-             end %for
-         else
-             for i=1:size(searchCell,1)
-                 %loop through each item in the column fields and check if
-                 %there are any matches
-                 for j=1:size(searchCell,2)
-                     if isequal(searchCell(i,j),elementCell(j))
-                        x = i; 
-                        break;
-                     end %if
-                 end %for
-             end %for
-         end %if
-     end %FindCellInCell
+%      function [x] = FindCellInCell(searchCell,elementCell,indexes,fullmatch)
+%          %The order of indexes should be the same order as searchCell, but
+%          %its cell values should correspond to the cell in elementCell
+%          if nargin >= 3
+%             %the indexes have been passed, these should be in a cell array
+%             %but they may not all be values
+%             tmp_elementcell = 0;
+%             tmp_searchcell = 0;
+%             for i=1:size(indexes,2)
+%                 if ~strcmp(Useful.Val2Str(indexes(1,i)),'[]') &...
+%                         ~strcmp(Useful.Val2Str(indexes(1,i)),'-1')
+%                     %add index to tmp_cell
+%                     tmp_elementcell = [tmp_elementcell str2double(cell2mat(indexes(1,i)))];
+%                     tmp_searchcell = [tmp_searchcell i];
+%                 end %if
+%             end %for
+%             %now strip off the unwanted indexes in element cell
+%             elementCell = elementCell(1,tmp_elementcell(1,2:end));
+%             searchCell = searchCell(:,tmp_searchcell(1,2:end));
+%          end %if
+%          fuzzymatch = 0;
+%          if nargin == 4
+%              if fullmatch > 0 
+%                  fuzzymatch = 1;
+%              end %if
+%          end %if
+%          %Now lets make sure we're comparing cell array of the same cell
+%          %classes - ie strings
+%          searchCell = cellfun(@Useful.Val2Str,searchCell,'Un',0);
+%          elementCell = cellfun(@Useful.Val2Str,elementCell,'Un',0);
+%          x = -1;
+%          if fuzzymatch ==0
+%              for i=1:size(searchCell,1)
+%                  if isequal(searchCell(i,:),elementCell)
+%                     x = i; 
+%                     break;
+%                  end
+%              end %for
+%          else
+%              for i=1:size(searchCell,1)
+%                  %loop through each item in the column fields and check if
+%                  %there are any matches
+%                  for j=1:size(searchCell,2)
+%                      if isequal(searchCell(i,j),elementCell(j))
+%                         x = i; 
+%                         break;
+%                      end %if
+%                  end %for
+%              end %for
+%          end %if
+%      end %FindCellInCell
      
-     function [x] = FindCellInCellSimple(searchCell,elementCell)
-         x=0;
-                  %Now lets make sure we're comparing cell array of the same cell
-         %classes - ie strings
-         %EOK amended 5th may 2011 to convert both to upper case to allow
-         %comparison
-         searchCell = cellfun(@Useful.Val2Str,searchCell,'Un',0);
-         searchCell = cellfun(@upper,searchCell,'Un',0);
-         elementCell = cellfun(@Useful.Val2Str,elementCell,'Un',0);
-         elementCell = cellfun(@upper,elementCell,'Un',0);
-         for i=1:size(searchCell,1)
-                 if isequal(searchCell(i,:),elementCell)
-                    x = i; 
-                    break;
-                 end
-             end %for
-     end %FindCellInCellSimple
+%      function [x] = FindCellInCellSimple(searchCell,elementCell)
+%          x=0;
+%                   %Now lets make sure we're comparing cell array of the same cell
+%          %classes - ie strings
+%          %EOK amended 5th may 2011 to convert both to upper case to allow
+%          %comparison
+%          searchCell = cellfun(@Useful.Val2Str,searchCell,'Un',0);
+%          searchCell = cellfun(@upper,searchCell,'Un',0);
+%          elementCell = cellfun(@Useful.Val2Str,elementCell,'Un',0);
+%          elementCell = cellfun(@upper,elementCell,'Un',0);
+%          for i=1:size(searchCell,1)
+%                  if isequal(searchCell(i,:),elementCell)
+%                     x = i; 
+%                     break;
+%                  end
+%              end %for
+%      end %FindCellInCellSimple
      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      %> @brief Haversine formula
      %> @param sourceLon
@@ -301,27 +345,27 @@ end %function getMinDistBetweenPoints
     %> @param sqMat instance of the Commodities class.
     %> @retval x three col matrix in form [origin(1) dest(2) val(3)]
     % ======================================================================
-    function [x] = convertSquareTo3Col(sqMat)
-        x = cell(size(sqMat,1),3);
-        for i=1:size(sqMat,1)
-            tmp_origin = repmat(sqMat(i,1),size(sqMat,1)-1,1);
-            tmp = sqMat(i,2:end)';
-            tmp_dest = sqMat(:,1);
-            if i==1 
-                tmp = tmp(2:end,:);
-                tmp_dest = tmp_dest(2:end,:);
-            elseif i==size(sqMat,1)
-                tmp = [tmp(1:i,:);tmp(i:end,:)];
-                tmp_dest = [tmp_dest(1:i,:);tmp_dest(i:end,:)];
-            else
-                tmp = tmp(1:end-1,:);
-                tmp_dest = tmp_dest(1:end-1,:);
-            end
-            x(((i-1)*size(sqMat,1))+1:((i-1)*size(sqMat,1))+size(sqMat,1),:)=...
-                [tmp_origin tmp tmp_dest];
-            
-        end
-    end
+%     function [x] = convertSquareTo3Col(sqMat)
+%         x = cell(size(sqMat,1),3);
+%         for i=1:size(sqMat,1)
+%             tmp_origin = repmat(sqMat(i,1),size(sqMat,1)-1,1);
+%             tmp = sqMat(i,2:end)';
+%             tmp_dest = sqMat(:,1);
+%             if i==1 
+%                 tmp = tmp(2:end,:);
+%                 tmp_dest = tmp_dest(2:end,:);
+%             elseif i==size(sqMat,1)
+%                 tmp = [tmp(1:i,:);tmp(i:end,:)];
+%                 tmp_dest = [tmp_dest(1:i,:);tmp_dest(i:end,:)];
+%             else
+%                 tmp = tmp(1:end-1,:);
+%                 tmp_dest = tmp_dest(1:end-1,:);
+%             end
+%             x(((i-1)*size(sqMat,1))+1:((i-1)*size(sqMat,1))+size(sqMat,1),:)=...
+%                 [tmp_origin tmp tmp_dest];
+%             
+%         end
+%     end
     % ======================================================================
     %> @brief Convert 3 col matrix to square matrix
     %>
@@ -329,28 +373,28 @@ end %function getMinDistBetweenPoints
     %> @param units value to put in at top left cell
     %> @retval x square matrix
     % ======================================================================
-    function [x] = convert3ColToSquare(dta,units)
-        if nargin==1
-           units=''; 
-        end
-        %Get unique origin and dests
-        %A value in the dest row may not appear in the origin row so append
-        %it and get unique
-        uniqueVals = unique([dta(:,1);dta(:,2)]);
-        x = cell(size(uniqueVals,1),size(uniqueVals,1));
-        
-        for i=1:size(dta,1)
-            disp(['Inserting row ' num2str(i) ' into square matrix']);
-            disp(['From ' Useful.Val2Str(dta(i,1)) ' to ' ...
-                Useful.Val2Str(dta(i,2))]);
-             tmpRow = cellfun(@(x)strcmp(x,dta(i,1)),uniqueVals(:,1));
-             tmpCol = cellfun(@(x)strcmp(x,dta(i,2)),uniqueVals(:,1));   
-            x(tmpRow,tmpCol)= dta(i,3);
-            end
-        %Now add column names and row names
-        x = [uniqueVals x];
-        x = [{units} uniqueVals';x];
-    end
+%     function [x] = convert3ColToSquare(dta,units)
+%         if nargin==1
+%            units=''; 
+%         end
+%         %Get unique origin and dests
+%         %A value in the dest row may not appear in the origin row so append
+%         %it and get unique
+%         uniqueVals = unique([dta(:,1);dta(:,2)]);
+%         x = cell(size(uniqueVals,1),size(uniqueVals,1));
+%         
+%         for i=1:size(dta,1)
+%             disp(['Inserting row ' num2str(i) ' into square matrix']);
+%             disp(['From ' Useful.Val2Str(dta(i,1)) ' to ' ...
+%                 Useful.Val2Str(dta(i,2))]);
+%              tmpRow = cellfun(@(x)strcmp(x,dta(i,1)),uniqueVals(:,1));
+%              tmpCol = cellfun(@(x)strcmp(x,dta(i,2)),uniqueVals(:,1));   
+%             x(tmpRow,tmpCol)= dta(i,3);
+%             end
+%         %Now add column names and row names
+%         x = [uniqueVals x];
+%         x = [{units} uniqueVals';x];
+%     end
     % ======================================================================
     %> @brief Takes in two vectors and rearranges the first so that it's in
     %> line with the second. The first can have more than the second
@@ -358,19 +402,19 @@ end %function getMinDistBetweenPoints
     %> @param matchArray - vector to rearrange to
     %> @retval indxs - vector that can be used to sort toRearrange
     % =====================================================================
-    function [indxs] = matchUniqueArrays(toRearrange,matchArray)
-        indxs = zeros(size(matchArray,1),1);
-        for i=1:size(matchArray,1)
-            matchArray(i,1)
-            if isnan(matchArray(i,1)) || matchArray(i,1)==-1 ...
-                    || matchArray(i,1)==0
-                indxs(i,1) = -1;
-            else
-                indxs(i,1) = find(toRearrange==matchArray(i,1),1);
-            end %if
-        end %for
-        
-    end %function matchUniqueArrays
+%     function [indxs] = matchUniqueArrays(toRearrange,matchArray)
+%         indxs = zeros(size(matchArray,1),1);
+%         for i=1:size(matchArray,1)
+%             matchArray(i,1)
+%             if isnan(matchArray(i,1)) || matchArray(i,1)==-1 ...
+%                     || matchArray(i,1)==0
+%                 indxs(i,1) = -1;
+%             else
+%                 indxs(i,1) = find(toRearrange==matchArray(i,1),1);
+%             end %if
+%         end %for
+%         
+%     end %function matchUniqueArrays
     % ======================================================================
     %> @brief Takes in two matrices with mathcing no of columns, and
     %> selects the indxs from the first that all match with the second. If
@@ -458,21 +502,21 @@ end %function getMinDistBetweenPoints
     %> @param dta 3 col matrix
     %> @retval x matrix
     % ======================================================================
-    function [x,categories,fields] = convert3colToMatrix(dta)
-       %get unique column fields
-       fields = sort(unique(dta(:,2)),'ascend');
-       categories = sort(unique(dta(:,1)),'ascend');
-       x = zeros(size(categories,1),1+size(fields,1));
-       x(:,1) = categories;
-       for i=1:size(dta,1)
-           indxCategory = find(categories(:,1)==dta(i,1));
-           indxField = find(fields(:,1)==dta(i,2));
-           %disp(sprintf('Year %.0f and indxField %.of',dta(i,2),indxField));
-           x(indxCategory,1+indxField) = dta(i,3);
-       end %for i
-       % Add warning to say we should be using the new function
-       warning('This is an old function and is superceded by convertNColToMatrix');
-    end
+%     function [x,categories,fields] = convert3colToMatrix(dta)
+%        %get unique column fields
+%        fields = sort(unique(dta(:,2)),'ascend');
+%        categories = sort(unique(dta(:,1)),'ascend');
+%        x = zeros(size(categories,1),1+size(fields,1));
+%        x(:,1) = categories;
+%        for i=1:size(dta,1)
+%            indxCategory = find(categories(:,1)==dta(i,1));
+%            indxField = find(fields(:,1)==dta(i,2));
+%            %disp(sprintf('Year %.0f and indxField %.of',dta(i,2),indxField));
+%            x(indxCategory,1+indxField) = dta(i,3);
+%        end %for i
+%        % Add warning to say we should be using the new function
+%        warning('This is an old function and is superceded by convertNColToMatrix');
+%     end
     % ======================================================================
     %> @brief converts n col to n-1 dimensional matrix. Last col is the
     %> values and the other cols are the categories
@@ -575,7 +619,7 @@ end %function getMinDistBetweenPoints
     %> @param string containing lat or lon in format 26-25N or 34-32E
     %> @retval lat or long
     % ======================================================================
-    function [coord] = getShellLatLon(LatLon)
+    function [coord] = parseLatLon(LatLon)
         %get array of numeric values
         coord = cell2mat(regexp(LatLon,{'\d'}));
         coord = str2num(LatLon(coord(1:end-2))) + ...
@@ -635,6 +679,544 @@ end %function getMinDistBetweenPoints
         
         
     end %function getConfigProperty
+    
+    %---------------------------------------------------------
+    %> @brief show a graph with axes and allows the user generate a dataset
+    %> by clicking in the graph. Used for clustering. it was used in the
+    %> Adaptive Modelling of Complex data course provided by Yee Whye Teh
+    %> and is available from his UCL course pages. 
+    %>
+    %> @retval X The series of points [m x 2]
+    %---------------------------------------------------------
+    function X = getPoints()
+
+        cla;
+        Useful.pointq_setup(gca);
+        title('Left click to add points; right click to exit');
+        aa = axis;
+        X = zeros(0,2);
+        stop = 0;
+        while (~stop)
+          xx = Useful.pointq_get(gca);
+          ii = find(isnan(xx(:,1)));
+          if ~isempty(ii)
+            xx = xx(1:ii(1)-1,:);
+            stop = 1;
+          end
+          ll = line(xx(:,1),xx(:,2));
+          set(ll,'marker','x');
+          axis(aa);
+          X = cat(1,X,xx);
+          pause(.1);
+        end
+    end %getPoints()
+    
+    % print statement to screen.
+        % if an equal sign is encountered the following expression is evaluated
+        % and output printed.
+        % to print a string including spaces put them in single quotes.
+        % to print an equal sign use backslash i.e. \=
+        % to print comma, semicolon, parentheses or braces use quotes e.g. ',' ';'
+        % to not print space between strings place a \ at end of preceding string.
+        % if an exclamation mark is encountered the following expression is evaluated,
+        % if this is > verboselevel (global variable) rest of expressions not printed.
+        % Examples:
+        %    say one two three                          %> one two three
+        %    say one plus three \= =1+3                 %> one plus three = 4
+        %    a = 3; say a+a \= =a+a                     %> a+a = 6
+        %    say 'C{\' =a\ ','\ =a+a\ '};'              %> C{3,6};
+        %    global verboselevel; verboselevel = 3      % by default is 0
+        %    say one !1 two !4 three                    %> one two
+        %    say one !4 two !1 three                    %> one
+        %
+        % Note: "say =a+a" does not work as matlab interprets this as assigning a+a to
+        % variable "say".
+        %
+        %> It was used in the
+    %> Adaptive Modelling of Complex data course provided by Yee Whye Teh
+    %> and is available from his UCL course pages. 
+    function say(varargin)
+        
+
+        for i=1:nargin
+          if ischar(varargin{i}) 
+            if varargin{i}(end)=='\'
+              format = '%s';
+              varargin{i}(end) = '';
+            else
+              format = '%s ';
+            end
+            if varargin{i}(1)=='='
+              varargin{i} = evalin('caller',varargin{i}(2:end));
+            elseif varargin{i}(1)=='\'
+              varargin{i} = varargin{i}(2:end);
+            elseif varargin{i}(1)=='!' % verbosity
+              global verboselevel
+              if ~exist('verboselevel'), verboselevel = 0; end
+              level = evalin('caller',varargin{i}(2:end));
+              if level > verboselevel, fprintf(1,'\n'); return; end
+              continue;
+            end
+          end
+          if ischar(varargin{i})
+            fprintf(1,format,varargin{i});
+          elseif isnumeric(varargin{i})
+            fprintf(1,format,num2str(varargin{i}));
+          else
+            disp(varargin{i});
+          end
+
+        end
+        fprintf(1,'\n');
+
+    end % say
+    %-----------------------------------------------------------------
+    %> showTiledImages - display images. From the Adaptive modelling of
+    %> complex data course - provided by Maneesh Sahani
+    %>
+    %> @param X assumes the matrix X is a subset of vectors from the
+    %>   freyface data set, and plots the corresponding images row-first in
+    %>   a single image plot, padding with zeros if needed.  It assumes
+    %>   each vector appears as a column in X.
+    %> @param varargin
+    function handle = showTiledImages(X,varargin)
+
+
+        [Nrows,Nfaces] = size(X);
+        Nfacecols = [];
+        Nfacerows = [];
+
+        assignopts(who,varargin);
+
+        if (isempty(Nfacecols))
+          Nfacecols = ceil(sqrt(Nfaces));
+        end
+
+        if (isempty(Nfacerows))
+          Nfacerows = ceil(Nfaces/Nfacecols);
+        end
+
+
+        if Nrows ~= 20*28
+          error('number of rows doesn''t correspond to a freyface');
+        end
+
+
+        if (Nfacecols*Nfacerows ~= Nfaces)
+          % need to pad
+
+          X(:,end+(1:Nfacecols*Nfacerows-Nfaces)) = ...
+              zeros(Nrows, Nfacecols*Nfacerows-Nfaces);
+        end
+
+
+        imagesc(...
+            cell2mat(...
+                squeeze(...
+                    num2cell(...
+                        permute(...
+                            reshape(X, [20, 28, Nfacecols, Nfacerows]), ...
+                            [2,1,4,3]), ...
+                        [1,2])...
+                    )...
+                )...
+            );
+        colormap gray;
+
+
+        function remain = assignopts (opts, varargin)
+        % assignopts - assign optional arguments (matlab 5 or higher)
+        %
+        %   REM = ASSIGNOPTS(OPTLIST, 'VAR1', VAL1, 'VAR2', VAL2, ...)
+        %   assigns, in the caller's workspace, the values VAL1,VAL2,... to
+        %   the variables that appear in the cell array OPTLIST and that match
+        %   the strings 'VAR1','VAR2',... .  Any VAR-VAL pairs that do not
+        %   match a variable in OPTLIST are returned in the cell array REM.
+        %   The VAR-VAL pairs can also be passed to ASSIGNOPTS in a cell
+        %   array: REM = ASSIGNOPTS(OPTLIST, {'VAR1', VAL1, ...});
+        %
+        %   By default ASSIGNOPTS matches option names using the strmatch
+        %   defaults: matches are case sensitive, but a (unique) prefix is
+        %   sufficient.  If a 'VAR' string is a prefix for more than one
+        %   option in OPTLIST, and does not match any of them exactly, no
+        %   assignment occurs and the VAR-VAL pair is returned in REM.
+        %
+        %   This behaviour can be modified by preceding OPTLIST with one or
+        %   both of the following flags:
+        %      'ignorecase' implies case-insensitive matches.
+        %      'exact'      implies exact string matches.
+        %   Both together imply case-insensitive, but otherwise exact, matches.
+        %
+        %   ASSIGNOPTS useful for processing optional arguments to a function.
+        %   Thus in a function which starts:
+        %		function foo(x,y,varargin)
+        %		z = 0;
+        %		assignopts({'z'}, varargin{:});
+        %   the variable z can be given a non-default value by calling the
+        %   function thus: foo(x,y,'z',4);  When used in this way, a list
+        %   of currently defined variables can easily be obtained using
+        %   WHO.  Thus if we define:
+        %		function foo(x,y,varargin)
+        %		opt1 = 1;
+        %               opt2 = 2;
+        %		rem = assignopts('ignorecase', who, varargin);
+        %   and call foo(x, y, 'OPT1', 10, 'opt', 20); the variable opt1
+        %   will have the value 10, the variable opt2 will have the
+        %   (default) value 2 and the list rem will have the value {'opt',
+        %   20}. 
+        % 
+        %   See also WARNOPTS, WHO.
+
+        ignorecase = 0;
+        exact = 0;
+
+        % check for flags at the beginning
+        while (~iscell(opts))
+          switch(lower(opts))
+           case 'ignorecase',
+            ignorecase = 1;
+           case 'exact',
+            exact = 1;
+           otherwise,
+            error(['unrecognized flag :', opts]);
+          end
+
+          opts = varargin{1};
+          varargin = varargin{2:end};
+        end
+
+        % if passed cell array instead of list, deal
+        if length(varargin) == 1 & iscell(varargin{1})
+          varargin = varargin{1};
+        end
+
+        if rem(length(varargin),2)~=0,
+           error('Optional arguments and values must come in pairs')
+        end     
+
+        done = zeros(1, length(varargin));
+
+        origopts = opts;
+        if ignorecase
+          opts = lower(opts);
+        end
+
+        for i = 1:2:length(varargin)
+
+          opt = varargin{i};
+          if ignorecase
+            opt = lower(opt);
+          end
+
+          % look for matches
+
+          if exact
+            match = strmatch(opt, opts, 'exact');
+          else
+            match = strmatch(opt, opts);
+          end
+
+          % if more than one matched, try for an exact match ... if this
+          % fails we'll ignore this option.
+
+          if (length(match) > 1)
+            match = strmatch(opt, opts, 'exact');
+          end
+
+          % if we found a unique match, assign in the corresponding value,
+          % using the *original* option name
+
+          if length(match) == 1
+            assignin('caller', origopts{match}, varargin{i+1});
+            done(i:i+1) = 1;
+          end
+        end
+
+        varargin(find(done)) = [];
+        remain = varargin;
+
+
+        end%assignOpts
+    end % showTiledImages
+    %-------------------------------------------------------------
+%> @brief exploreManifold - interactively view images from manifold position
+%> plots Y(1,:) against Y(2,:) and then
+%>   enters an interactive mode to allow users to click on or near a
+%>   point and see the corresponding face image in an adjacent
+%>   plot.  A click away from any point ends the interactive session.   
+%>
+%> @param Y [m x n] The eigenvectors transforms of the data, X
+%> @para, X [n x m] input data set that Y corresponds to. This is use dto
+%> reconstruct the image
+
+    function exploreManifold(Y,X)
+
+
+clf;
+
+yax = axes('position', [.1,.1,.7,.8]);
+fax = axes('position', [.85,.8,.1,.1]);
+axis off;
+
+axes(yax);
+hh = plot(Y(1,:), Y(2,:), '.');
+
+
+disp(['=== click on a point to display the face; '...
+      'click on the background to end ===']);
+
+for ii = 1:100
+  axes(yax);
+  click = selectdatum('Handle', hh, 'Verbose', 0, 'MaxAttempts', 1);
+  if (~isempty(click))
+    axes(fax);
+    showfreyface(X(:,click));
+    axis off;
+  else
+    break;
+  end
+end
+  
+
+function ii = selectdatum(varargin)
+% i = selectdatum(...): select datum by mouse input.
+%
+% SELECTDATUM waits for the user to click in the current axes and then
+% returns the index of the data point within the current line object
+% that lies closest to the clicked location.  
+%
+% OPTIONS:
+% 'Handle'	[gco]	handle to line object
+% 'Highlight'   ['red'] temporary object color (empty for no highlight)
+% 'MaxSlop'	[10]	max distance (in points) between click and datum
+% 'Verbose'	[0]	give user instructions
+% 'MaxAttempts'	[5]	return empty after this many failed attempts
+%
+% See also: GINPUT.
+
+% OPTIONS:
+Handle = [];                % [gco] handle to line object
+Highlight = 'red';          % temporary object color (empty for no highlight)
+MaxSlop = 10;               % max distance (in points) between click and datum
+Verbose = 0;                % give user instructions
+MaxAttempts = 5;            % return empty after this many failed attempts
+assignopts('ignorecase', who, varargin);
+
+if (isempty(Handle))
+  Handle = gco;
+end
+
+if (isempty(Handle))
+  Handle = findobj(gca, 'type', 'line');
+  if length(Handle) > 1
+    Handle = Handle(1);
+  end
+end
+
+if (isempty(Handle))
+  error ('no plots!');
+end
+
+if isempty(strmatch(get(Handle, 'type'), {'line', 'hggroup'}))
+  error('(current) object must be a line or group');
+end
+
+if ~isempty(Highlight)
+  oldcolor = get(Handle, 'Color');
+  set(Handle, 'Color', Highlight);
+end
+
+ii = [];
+
+[dux,duy] = dataunits('points');
+xx = get(Handle, 'xdata')/dux;
+yy = get(Handle, 'ydata')/duy;
+
+if Verbose
+  if isempty(Highlight)
+    disp('select a point in the current plot');
+  else
+    disp('select a point in the highlighted plot');
+  end
+end
+
+for attempt = 1:MaxAttempts
+  [x,y] = ginput(1);
+
+  [mindist,ii] = min((x/dux - xx).^2 + (y/duy - yy).^2);
+  if (mindist > MaxSlop.^2)
+    ii = [];
+    if (attempt < MaxAttempts)
+      if Verbose disp('click was not near a data point; try again'); end
+    end
+  else
+    break
+  end
+end
+
+if (~isempty(Highlight))
+  set(Handle, 'Color', oldcolor);
+end  
+
+function remain = assignopts (opts, varargin)
+% assignopts - assign optional arguments (matlab 5 or higher)
+%
+%   REM = ASSIGNOPTS(OPTLIST, 'VAR1', VAL1, 'VAR2', VAL2, ...)
+%   assigns, in the caller's workspace, the values VAL1,VAL2,... to
+%   the variables that appear in the cell array OPTLIST and that match
+%   the strings 'VAR1','VAR2',... .  Any VAR-VAL pairs that do not
+%   match a variable in OPTLIST are returned in the cell array REM.
+%   The VAR-VAL pairs can also be passed to ASSIGNOPTS in a cell
+%   array: REM = ASSIGNOPTS(OPTLIST, {'VAR1', VAL1, ...});
+%
+%   By default ASSIGNOPTS matches option names using the strmatch
+%   defaults: matches are case sensitive, but a (unique) prefix is
+%   sufficient.  If a 'VAR' string is a prefix for more than one
+%   option in OPTLIST, and does not match any of them exactly, no
+%   assignment occurs and the VAR-VAL pair is returned in REM.
+%
+%   This behaviour can be modified by preceding OPTLIST with one or
+%   both of the following flags:
+%      'ignorecase' implies case-insensitive matches.
+%      'exact'      implies exact string matches.
+%   Both together imply case-insensitive, but otherwise exact, matches.
+%
+%   ASSIGNOPTS useful for processing optional arguments to a function.
+%   Thus in a function which starts:
+%		function foo(x,y,varargin)
+%		z = 0;
+%		assignopts({'z'}, varargin{:});
+%   the variable z can be given a non-default value by calling the
+%   function thus: foo(x,y,'z',4);  When used in this way, a list
+%   of currently defined variables can easily be obtained using
+%   WHO.  Thus if we define:
+%		function foo(x,y,varargin)
+%		opt1 = 1;
+%               opt2 = 2;
+%		rem = assignopts('ignorecase', who, varargin);
+%   and call foo(x, y, 'OPT1', 10, 'opt', 20); the variable opt1
+%   will have the value 10, the variable opt2 will have the
+%   (default) value 2 and the list rem will have the value {'opt',
+%   20}. 
+% 
+%   See also WARNOPTS, WHO.
+
+ignorecase = 0;
+exact = 0;
+
+% check for flags at the beginning
+while (~iscell(opts))
+  switch(lower(opts))
+   case 'ignorecase',
+    ignorecase = 1;
+   case 'exact',
+    exact = 1;
+   otherwise,
+    error(['unrecognized flag :', opts]);
+  end
+  
+  opts = varargin{1};
+  varargin = varargin{2:end};
+end
+
+% if passed cell array instead of list, deal
+if length(varargin) == 1 & iscell(varargin{1})
+  varargin = varargin{1};
+end
+
+if rem(length(varargin),2)~=0,
+   error('Optional arguments and values must come in pairs')
+end     
+
+done = zeros(1, length(varargin));
+
+origopts = opts;
+if ignorecase
+  opts = lower(opts);
+end
+
+for i = 1:2:length(varargin)
+
+  opt = varargin{i};
+  if ignorecase
+    opt = lower(opt);
+  end
+  
+  % look for matches
+  
+  if exact
+    match = strmatch(opt, opts, 'exact');
+  else
+    match = strmatch(opt, opts);
+  end
+  
+  % if more than one matched, try for an exact match ... if this
+  % fails we'll ignore this option.
+
+  if (length(match) > 1)
+    match = strmatch(opt, opts, 'exact');
+  end
+
+  % if we found a unique match, assign in the corresponding value,
+  % using the *original* option name
+  
+  if length(match) == 1
+    assignin('caller', origopts{match}, varargin{i+1});
+    done(i:i+1) = 1;
+  end
+end
+
+varargin(find(done)) = [];
+remain = varargin;
+
+
+function [dux, duy] = dataunits(units)
+% [x,y] = dataunits('units'): data equivalent to physical units
+%    [X,Y] = DATAUNITS('UNITS') gives the equivalent data units in the
+%    current axes to the physical unit length UNITS, which must be one
+%    of 'pixels', 'inches', 'centimeters', 'points' or 'normalized'.
+%    This might be useful for setting lines, patches or other objects
+%    without a 'units' property to a specific physical length.  But
+%    see the warning below.
+%
+%    XY = DATAUNITS('UNITS') does the same thing, but returns a
+%    two-element row-vector.
+%
+%    WARNING: MATLAB's conversion routines seem to be insensitive
+%    to the current figure's 'paperposition'.  So the conversion
+%    seems only to work reasonably for the default setting of
+%    paperposition (i.e. orient portrait).
+
+knownunits = {'pixels', 'inches', 'centimeters', 'points', 'normalized'};
+
+if isempty(strmatch(units, knownunits))
+  error(['units must be one of' sprintf(' %s', knownunits{:})]);
+end
+
+xlim = get(gca, 'xlim');
+ylim = get(gca, 'ylim');
+
+if (strmatch(units, 'normalized'))
+  dux = diff(xlim);
+  duy = diff(ylim);
+else
+  ounits = get(gca, 'units');
+
+  set(gca, 'units', units);
+  pos = get(gca, 'position');
+  set(gca, 'units', ounits);
+  
+  dux = diff(xlim)./pos(3);
+  duy = diff(ylim)./pos(4);
+end
+
+if nargout < 2
+  dux = [dux, duy];
+end
+end %dataunits
+end %assignOpts
+end %select datum
+    end%exploreManifold
    end % methods Static = true
 
 end
