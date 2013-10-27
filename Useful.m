@@ -345,27 +345,27 @@ end %function getMinDistBetweenPoints
     %> @param sqMat instance of the Commodities class.
     %> @retval x three col matrix in form [origin(1) dest(2) val(3)]
     % ======================================================================
-%     function [x] = convertSquareTo3Col(sqMat)
-%         x = cell(size(sqMat,1),3);
-%         for i=1:size(sqMat,1)
-%             tmp_origin = repmat(sqMat(i,1),size(sqMat,1)-1,1);
-%             tmp = sqMat(i,2:end)';
-%             tmp_dest = sqMat(:,1);
-%             if i==1 
-%                 tmp = tmp(2:end,:);
-%                 tmp_dest = tmp_dest(2:end,:);
-%             elseif i==size(sqMat,1)
-%                 tmp = [tmp(1:i,:);tmp(i:end,:)];
-%                 tmp_dest = [tmp_dest(1:i,:);tmp_dest(i:end,:)];
-%             else
-%                 tmp = tmp(1:end-1,:);
-%                 tmp_dest = tmp_dest(1:end-1,:);
-%             end
-%             x(((i-1)*size(sqMat,1))+1:((i-1)*size(sqMat,1))+size(sqMat,1),:)=...
-%                 [tmp_origin tmp tmp_dest];
-%             
-%         end
-%     end
+    function [x] = convertSquareTo3Col(sqMat)
+        x = cell(size(sqMat,1),3);
+        for i=1:size(sqMat,1)
+            tmp_origin = repmat(sqMat(i,1),size(sqMat,1)-1,1);
+            tmp = sqMat(i,2:end)';
+            tmp_dest = sqMat(:,1);
+            if i==1 
+                tmp = tmp(2:end,:);
+                tmp_dest = tmp_dest(2:end,:);
+            elseif i==size(sqMat,1)
+                tmp = [tmp(1:i,:);tmp(i:end,:)];
+                tmp_dest = [tmp_dest(1:i,:);tmp_dest(i:end,:)];
+            else
+                tmp = tmp(1:end-1,:);
+                tmp_dest = tmp_dest(1:end-1,:);
+            end
+            x(((i-1)*size(sqMat,1))+1:((i-1)*size(sqMat,1))+size(sqMat,1),:)=...
+                [tmp_origin tmp tmp_dest];
+            
+        end
+    end
     % ======================================================================
     %> @brief Convert 3 col matrix to square matrix
     %>
@@ -373,28 +373,28 @@ end %function getMinDistBetweenPoints
     %> @param units value to put in at top left cell
     %> @retval x square matrix
     % ======================================================================
-%     function [x] = convert3ColToSquare(dta,units)
-%         if nargin==1
-%            units=''; 
-%         end
-%         %Get unique origin and dests
-%         %A value in the dest row may not appear in the origin row so append
-%         %it and get unique
-%         uniqueVals = unique([dta(:,1);dta(:,2)]);
-%         x = cell(size(uniqueVals,1),size(uniqueVals,1));
-%         
-%         for i=1:size(dta,1)
-%             disp(['Inserting row ' num2str(i) ' into square matrix']);
-%             disp(['From ' Useful.Val2Str(dta(i,1)) ' to ' ...
-%                 Useful.Val2Str(dta(i,2))]);
-%              tmpRow = cellfun(@(x)strcmp(x,dta(i,1)),uniqueVals(:,1));
-%              tmpCol = cellfun(@(x)strcmp(x,dta(i,2)),uniqueVals(:,1));   
-%             x(tmpRow,tmpCol)= dta(i,3);
-%             end
-%         %Now add column names and row names
-%         x = [uniqueVals x];
-%         x = [{units} uniqueVals';x];
-%     end
+    function [x] = convert3ColToSquare(dta,units)
+        if nargin==1
+           units=''; 
+        end
+        %Get unique origin and dests
+        %A value in the dest row may not appear in the origin row so append
+        %it and get unique
+        uniqueVals = unique([dta(:,1);dta(:,2)]);
+        x = cell(size(uniqueVals,1),size(uniqueVals,1));
+        
+        for i=1:size(dta,1)
+            disp(['Inserting row ' num2str(i) ' into square matrix']);
+            disp(['From ' Useful.Val2Str(dta(i,1)) ' to ' ...
+                Useful.Val2Str(dta(i,2))]);
+             tmpRow = cellfun(@(x)strcmp(x,dta(i,1)),uniqueVals(:,1));
+             tmpCol = cellfun(@(x)strcmp(x,dta(i,2)),uniqueVals(:,1));   
+            x(tmpRow,tmpCol)= dta(i,3);
+            end
+        %Now add column names and row names
+        x = [uniqueVals x];
+        x = [{units} uniqueVals';x];
+    end
     % ======================================================================
     %> @brief Takes in two vectors and rearranges the first so that it's in
     %> line with the second. The first can have more than the second
@@ -502,21 +502,21 @@ end %function getMinDistBetweenPoints
     %> @param dta 3 col matrix
     %> @retval x matrix
     % ======================================================================
-%     function [x,categories,fields] = convert3colToMatrix(dta)
-%        %get unique column fields
-%        fields = sort(unique(dta(:,2)),'ascend');
-%        categories = sort(unique(dta(:,1)),'ascend');
-%        x = zeros(size(categories,1),1+size(fields,1));
-%        x(:,1) = categories;
-%        for i=1:size(dta,1)
-%            indxCategory = find(categories(:,1)==dta(i,1));
-%            indxField = find(fields(:,1)==dta(i,2));
-%            %disp(sprintf('Year %.0f and indxField %.of',dta(i,2),indxField));
-%            x(indxCategory,1+indxField) = dta(i,3);
-%        end %for i
-%        % Add warning to say we should be using the new function
-%        warning('This is an old function and is superceded by convertNColToMatrix');
-%     end
+    function [x,categories,fields] = convert3colToMatrix(dta)
+       %get unique column fields
+       fields = sort(unique(dta(:,2)),'ascend');
+       categories = sort(unique(dta(:,1)),'ascend');
+       x = zeros(size(categories,1),1+size(fields,1));
+       x(:,1) = categories;
+       for i=1:size(dta,1)
+           indxCategory = find(categories(:,1)==dta(i,1));
+           indxField = find(fields(:,1)==dta(i,2));
+           %disp(sprintf('Year %.0f and indxField %.of',dta(i,2),indxField));
+           x(indxCategory,1+indxField) = dta(i,3);
+       end %for i
+       % Add warning to say we should be using the new function
+       warning('This is an old function and is superceded by convertNColToMatrix');
+    end
     % ======================================================================
     %> @brief converts n col to n-1 dimensional matrix. Last col is the
     %> values and the other cols are the categories
