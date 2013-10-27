@@ -157,23 +157,23 @@ classdef Useful
 %          end %if
 %      end %FindCellInCell
      
-%      function [x] = FindCellInCellSimple(searchCell,elementCell)
-%          x=0;
-%                   %Now lets make sure we're comparing cell array of the same cell
-%          %classes - ie strings
-%          %EOK amended 5th may 2011 to convert both to upper case to allow
-%          %comparison
-%          searchCell = cellfun(@Useful.Val2Str,searchCell,'Un',0);
-%          searchCell = cellfun(@upper,searchCell,'Un',0);
-%          elementCell = cellfun(@Useful.Val2Str,elementCell,'Un',0);
-%          elementCell = cellfun(@upper,elementCell,'Un',0);
-%          for i=1:size(searchCell,1)
-%                  if isequal(searchCell(i,:),elementCell)
-%                     x = i; 
-%                     break;
-%                  end
-%              end %for
-%      end %FindCellInCellSimple
+     function [x] = FindCellInCellSimple(searchCell,elementCell)
+         x=0;
+                  %Now lets make sure we're comparing cell array of the same cell
+         %classes - ie strings
+         %EOK amended 5th may 2011 to convert both to upper case to allow
+         %comparison
+         searchCell = cellfun(@Useful.Val2Str,searchCell,'Un',0);
+         searchCell = cellfun(@upper,searchCell,'Un',0);
+         elementCell = cellfun(@Useful.Val2Str,elementCell,'Un',0);
+         elementCell = cellfun(@upper,elementCell,'Un',0);
+         for i=1:size(searchCell,1)
+                 if isequal(searchCell(i,:),elementCell)
+                    x = i; 
+                    break;
+                 end
+             end %for
+     end %FindCellInCellSimple
      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      %> @brief Haversine formula
      %> @param sourceLon
